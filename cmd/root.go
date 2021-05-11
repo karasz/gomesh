@@ -1,5 +1,4 @@
-The MIT License (MIT)
-
+/*
 Copyright © 2021 Nagy Károly Gábriel <k@jpi.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,3 +18,46 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+package cmd
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+
+	"github.com/karasz/gomesh/peers"
+)
+
+var dbFile string
+var thePeers peers.Peers
+
+// rootCmd represents the base command when called without any subcommands
+var rootCmd = &cobra.Command{
+	Use:   "gomesh",
+	Short: "Generate Wireguard Mesh VPN configurations",
+	Long:  `This little tool will generate and manage configuration files for Wireguard Mesh VPNs.`,
+}
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	cobra.CheckErr(rootCmd.Execute())
+}
+
+func init() {
+	rootCmd.PersistentFlags().StringVar(&dbFile, "database", "", "database file (default is database.json)")
+	initDatabase()
+}
+
+func initDatabase() {
+	var err error
+	if dbFile != "" {
+		thePeers, err = peers.LoadPeers(dbFile)
+	} else {
+		thePeers, err = peers.LoadPeers("database.json")
+	}
+	if err != nil {
+		fmt.Println(err)
+	}
+}

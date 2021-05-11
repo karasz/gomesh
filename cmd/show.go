@@ -1,5 +1,4 @@
-The MIT License (MIT)
-
+/*
 Copyright © 2021 Nagy Károly Gábriel <k@jpi.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,3 +18,26 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+)
+
+// showCmd represents the show command
+var showCmd = &cobra.Command{
+	Use:   "show",
+	Short: "Print a table with the peers",
+	Long: `Show will print a table with the registered Peers
+	if brief is set to true then empty atributes will be ommited`,
+	Run: func(cmd *cobra.Command, args []string) {
+		brief, _ := cmd.Flags().GetBool("brief")
+		thePeers.PrettyPrint(brief)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(showCmd)
+	showCmd.Flags().BoolP("brief", "b", true, "Only print non-empty fields")
+}

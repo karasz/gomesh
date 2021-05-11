@@ -1,5 +1,4 @@
-The MIT License (MIT)
-
+/*
 Copyright © 2021 Nagy Károly Gábriel <k@jpi.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,3 +18,36 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+package keys
+
+import (
+	"fmt"
+
+	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
+)
+
+// GenerateKey will return a base64 encoded string
+// suitable for using as a Wireguyard PrivateKey
+func GenerateKey() (string, error) {
+	privatekey, err := wgtypes.GeneratePrivateKey()
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	privkeystring := privatekey.String()
+	return privkeystring, nil
+
+}
+
+//PublicKey will return a base64 encoded
+// public key from a base64 encoded PrivateKey
+func PublicKey(a string) (string, error) {
+	k, err := wgtypes.ParseKey(a)
+	if err != nil {
+		return "", err
+	}
+
+	return k.PublicKey().String(), nil
+
+}

@@ -1,5 +1,4 @@
-The MIT License (MIT)
-
+/*
 Copyright © 2021 Nagy Károly Gábriel <k@jpi.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,3 +18,28 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+)
+
+// delCmd represents the del command
+var delCmd = &cobra.Command{
+	Use:   "del",
+	Short: "Delete a peer from registry",
+	Long:  `The peer with the name will be deleted`,
+	Run: func(cmd *cobra.Command, args []string) {
+		peer, _ := cmd.Flags().GetString("name")
+		thePeers.DeletePeer(peer)
+	},
+}
+
+func init() {
+	delCmd.Flags().StringP("name", "n", "", "Peer to delete")
+	delCmd.MarkFlagRequired("name")
+
+	rootCmd.AddCommand(delCmd)
+
+}
