@@ -83,7 +83,7 @@ func init() {
 	addCmd.Flags().StringP("privatekey", "p", "", "private key of server interface (if none given one will be generated")
 	addCmd.Flags().IntP("listenport", "l", 51820, "Port to listen on, default 51820")
 	addCmd.Flags().IntP("fwmark", "f", 0, "Mark the outgoing packets with")
-	addCmd.Flags().StringP("dns", "d", "", "DNS server")
+	addCmd.Flags().StringP("dns", "", "", "DNS server")
 	addCmd.Flags().IntP("mtu", "m", 0, "Server interface MTU")
 	addCmd.Flags().StringP("routing_table", "r", "", "Server routing table")
 	addCmd.Flags().StringP("preUP", "", "", "Command to run before bringing the interface UP")
