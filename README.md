@@ -1,3 +1,4 @@
+[![Release Go project](https://github.com/karasz/gomesh/actions/workflows/go.yml/badge.svg)](https://github.com/karasz/gomesh/actions/workflows/go.yml)
 # gomesh
 
 ## Alpha state
@@ -12,8 +13,7 @@ gomesh generates peer configuration files for WireGuard mesh networks.
 
 Just copy a released binary to a directory and run it.
 
-
-## Detailed Usages
+## Detailed Usage
 
 You may refer to the program's help page for usages. Use the `-h` switch or the `--help` switch to print the help page.
 
