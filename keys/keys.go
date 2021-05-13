@@ -22,8 +22,6 @@ THE SOFTWARE.
 package keys
 
 import (
-	"fmt"
-
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -32,7 +30,6 @@ import (
 func GenerateKey() (string, error) {
 	privatekey, err := wgtypes.GeneratePrivateKey()
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	privkeystring := privatekey.String()
@@ -47,7 +44,5 @@ func PublicKey(a string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return k.PublicKey().String(), nil
-
 }

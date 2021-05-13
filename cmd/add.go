@@ -22,6 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/karasz/gomesh/peers"
 	"github.com/spf13/cobra"
 )
@@ -65,7 +67,10 @@ var addCmd = &cobra.Command{
 			PostDown:   postdown,
 			SaveConfig: saveconfig,
 		}
-		thePeers.AddPeer(p)
+		err := thePeers.AddPeer(p)
+		if err != nil {
+			fmt.Println(err)
+		}
 	},
 }
 

@@ -37,6 +37,8 @@ import (
 // registered peers
 type Peers []Peer
 
+var dbFile string
+
 //Peer is a Wireguard Peer
 type Peer struct {
 	Name       string
@@ -61,12 +63,12 @@ type Peer struct {
 func LoadPeers(peersPath string) (Peers, error) {
 
 	var p Peers
-
-	peersFile, err := os.Open(peersPath)
+	var err error
+	var peersFile *os.File
+	peersFile, err = os.OpenFile(peersPath, os.O_RDONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return nil, err
 	}
-
 	defer peersFile.Close()
 
 	jsonParser := json.NewDecoder(peersFile)
@@ -74,6 +76,8 @@ func LoadPeers(peersPath string) (Peers, error) {
 	if err != nil {
 		return nil, err
 	}
+	dbFile = peersPath
+
 	return p, nil
 }
 
@@ -104,8 +108,7 @@ func (p Peers) AddPeer(pr Peer) error {
 		pr.ListenPort = 51820
 	}
 	p = append(p, pr)
-	err := p.DumpPeers("", true)
-	fmt.Println(err)
+	err := p.DumpPeers(true)
 	return err
 }
 
@@ -119,21 +122,65 @@ func (p Peers) DeletePeer(pr string) {
 	}
 
 	p = append(p[:index], p[index+1:]...)
-	p.DumpPeers("", true)
+	err := p.DumpPeers(true)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 //GenerateConfigs will generate the Wireguard mesh
 //configs in the specified folder
-func (p Peers) GenerateConfigs(folder string) {
-	fmt.Println("not yet implemented")
+func (p Peers) GenerateConfigs(folder string) error {
+	var err error
+	if err = os.MkdirAll(folder, 0775); err != nil {
+		return err
+	}
+	for i := range p {
+		err = p.dumpConfig(p[i], folder)
+	}
+	return err
+}
+
+func (p Peers) dumpConfig(pr Peer, folder string) error {
+	var err error
+	configFile := folder + "/" + pr.Name + ".conf"
+	var strToWrite string
+	f, err := os.OpenFile(configFile, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	// write the interface section
+	strToWrite = "[Interface]\n"
+	strToWrite = strToWrite + fmt.Sprintf("# Name: %s\n", strings.ToLower(pr.Name))
+	strToWrite = strToWrite + fmt.Sprintf("Address = %s\n", strings.Join(pr.Address, ","))
+	strToWrite = strToWrite + fmt.Sprintf("PrivateKey = %s\n", pr.PrivateKey)
+	strToWrite = strToWrite + fmt.Sprintf("Endpoint = %s:%d\n", pr.Endpoint, pr.ListenPort)
+
+	// write the peers section
+	for j := range p {
+		if p[j].Name != pr.Name {
+			strToWrite = strToWrite + "\n[Peer]\n"
+			strToWrite = strToWrite + fmt.Sprintf("# Name: %s\n", strings.ToLower(p[j].Name))
+			pub, err := keys.PublicKey(p[j].PrivateKey)
+			if err != nil {
+				return err
+			}
+			strToWrite = strToWrite + fmt.Sprintf("PublicKeyKey = %s\n", pub)
+			strToWrite = strToWrite + fmt.Sprintf("Endpoint = %s:%d\n", p[j].Endpoint, p[j].ListenPort)
+			allIPs := append(p[j].Address, p[j].AllowedIPs...)
+			strToWrite = strToWrite + fmt.Sprintf("AllowedIPs = %s\n", strings.Join(allIPs, ","))
+
+		}
+
+	}
+	_, err = f.WriteString(strToWrite)
+	return err
 }
 
 // DumpPeers will generate a JSON file at the provided location with the
 // registered Peers
-func (p Peers) DumpPeers(peersPath string, overwrite bool) error {
-	if peersPath == "" {
-		peersPath = "database.json"
-	}
+func (p Peers) DumpPeers(overwrite bool) error {
 	// we chose to represent that a file exists with value 2 (linux read ACL)
 	// and that we want to overwrite with value 4 (linux write ACL) so that
 	// we can check all the possibilities with one if statement
@@ -147,16 +194,16 @@ func (p Peers) DumpPeers(peersPath string, overwrite bool) error {
 
 	peersJson, _ := json.MarshalIndent(p, "", "    ")
 
-	if _, err = os.Stat(peersPath); os.IsNotExist(err) {
+	if _, err = os.Stat(dbFile); os.IsNotExist(err) {
 		exists = 0
-		err = os.MkdirAll(filepath.Dir(peersPath), 0755)
+		err = os.MkdirAll(filepath.Dir(dbFile), 0755)
 		if err != nil {
 			return err
 		}
 	}
 
 	if overwritebits+exists != 2 {
-		err = os.WriteFile(peersPath, peersJson, 0644)
+		err = os.WriteFile(dbFile, peersJson, 0644)
 		if err != nil {
 			return err
 		}
@@ -169,7 +216,6 @@ func (p Peers) DumpPeers(peersPath string, overwrite bool) error {
 // PrettyPrint will print a table with the peers
 func (p Peers) PrettyPrint(brief bool) {
 	const padding = 3
-	fmt.Println(brief)
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, padding, ' ', tabwriter.AlignRight|tabwriter.Debug)
 
 	if !brief {

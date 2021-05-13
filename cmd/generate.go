@@ -22,6 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -31,13 +33,15 @@ var generateCmd = &cobra.Command{
 	Short: "Generate configs",
 	Long:  `Generate will create the configs file in the specified folder`,
 	Run: func(cmd *cobra.Command, args []string) {
-		out, _ := cmd.Flags().GetString("o")
-		thePeers.GenerateConfigs(out)
+		out, _ := cmd.Flags().GetString("output")
+		err := thePeers.GenerateConfigs(out)
+		if err != nil {
+			fmt.Println("generate", err)
+		}
 	},
 }
 
 func init() {
-	generateCmd.Flags().StringP("output", "o", "/output", "Directory where to output configs.")
-	generateCmd.MarkFlagRequired("output")
+	generateCmd.Flags().StringP("output", "o", "output", "Directory where to output configs.")
 	rootCmd.AddCommand(generateCmd)
 }

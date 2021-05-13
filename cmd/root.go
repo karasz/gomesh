@@ -29,14 +29,14 @@ import (
 	"github.com/karasz/gomesh/peers"
 )
 
-var dbFile string
 var thePeers peers.Peers
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gomesh",
-	Short: "Generate Wireguard Mesh VPN configurations",
-	Long:  `This little tool will generate and manage configuration files for Wireguard Mesh VPNs.`,
+	Use:     "gomesh",
+	Short:   "Generate Wireguard Mesh VPN configurations",
+	Long:    "This little tool will generate and manage configuration files for Wireguard Mesh VPNs.",
+	Version: "0.1-dev",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -46,17 +46,15 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&dbFile, "database", "", "database file (default is database.json)")
-	initDatabase()
+	var dbFile string
+	rootCmd.PersistentFlags().StringVarP(&dbFile, "database", "d", "database.json", "database file (default is database.json)")
+	initDatabase(dbFile)
 }
 
-func initDatabase() {
+func initDatabase(filePath string) {
 	var err error
-	if dbFile != "" {
-		thePeers, err = peers.LoadPeers(dbFile)
-	} else {
-		thePeers, err = peers.LoadPeers("database.json")
-	}
+	thePeers, err = peers.LoadPeers(filePath)
+
 	if err != nil {
 		fmt.Println(err)
 	}
