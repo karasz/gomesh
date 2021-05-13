@@ -47,7 +47,7 @@ func Execute() {
 
 func init() {
 	var dbFile string
-	rootCmd.PersistentFlags().StringVarP(&dbFile, "database", "d", "database.json", "database file (default is database.json)")
+	rootCmd.PersistentFlags().StringVarP(&dbFile, "database", "d", "database.json", "database file")
 	initDatabase(dbFile)
 }
 
