@@ -73,7 +73,7 @@ func LoadPeers(peersPath string) (Peers, error) {
 
 	jsonParser := json.NewDecoder(peersFile)
 	err = jsonParser.Decode(&p)
-	if err != nil {
+	if err != nil && err.Error() != "EOF" {
 		return nil, err
 	}
 	dbFile = peersPath
@@ -215,6 +215,9 @@ func (p Peers) DumpPeers(overwrite bool) error {
 
 // PrettyPrint will print a table with the peers
 func (p Peers) PrettyPrint(brief bool) {
+	if len(p) == 0 {
+		return
+	}
 	const padding = 3
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, padding, ' ', tabwriter.AlignRight|tabwriter.Debug)
 
