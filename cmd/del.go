@@ -22,6 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +40,10 @@ var delCmd = &cobra.Command{
 
 func init() {
 	delCmd.Flags().StringP("name", "n", "", "Peer to delete")
-	delCmd.MarkFlagRequired("name")
+	err := delCmd.MarkFlagRequired("name")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	rootCmd.AddCommand(delCmd)
 

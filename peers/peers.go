@@ -114,6 +114,9 @@ func (p Peers) AddPeer(pr Peer) error {
 
 //DeletePeer will delete the named Peer from the register
 func (p Peers) DeletePeer(pr string) {
+	if len(p) == 0 {
+		return
+	}
 	index := 0
 	for i := range p {
 		if p[i].Name == pr {
