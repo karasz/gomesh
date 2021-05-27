@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package peers
+package wireguard
 
 import (
 	"encoding/json"
@@ -29,8 +29,6 @@ import (
 	"strconv"
 	"strings"
 	"text/tabwriter"
-
-	"github.com/karasz/gomesh/keys"
 )
 
 // Peers is a map containing all
@@ -97,7 +95,7 @@ func (p Peers) peerExists(pr Peer) bool {
 //AddPeer will add a Peer to the register
 func (p Peers) AddPeer(pr Peer) error {
 	if pr.PrivateKey == "" {
-		k, err := keys.GenerateKey()
+		k, err := GenerateKey()
 		if err != nil {
 			return err
 		}
@@ -165,7 +163,7 @@ func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
 		if p[j].Name != pr.Name {
 			strToWrite = strToWrite + "\n[Peer]\n"
 			strToWrite = strToWrite + fmt.Sprintf("# Name: %s\n", strings.ToLower(p[j].Name))
-			pub, err := keys.PublicKey(p[j].PrivateKey)
+			pub, err := PublicKey(p[j].PrivateKey)
 			if err != nil {
 				return err
 			}

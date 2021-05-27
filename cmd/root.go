@@ -27,10 +27,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/karasz/gomesh/peers"
+	"github.com/karasz/gomesh/wireguard"
 )
 
-var thePeers peers.Peers
+var thePeers wireguard.Peers
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -56,7 +56,7 @@ func init() {
 
 func initDatabase(filePath string) {
 	var err error
-	thePeers, err = peers.LoadPeers(filePath)
+	thePeers, err = wireguard.LoadPeers(filePath)
 
 	if err != nil {
 		fmt.Println(err)
