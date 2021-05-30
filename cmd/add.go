@@ -24,7 +24,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/karasz/gomesh/peers"
+	"github.com/karasz/gomesh/wireguard"
 	"github.com/spf13/cobra"
 )
 
@@ -51,7 +51,7 @@ var addCmd = &cobra.Command{
 		postup, _ := cmd.Flags().GetString("postup")
 		postdown, _ := cmd.Flags().GetString("postdown")
 		saveconfig, _ := cmd.Flags().GetBool("saveconfig")
-		p := peers.Peer{Name: name, PrivateKey: privatekey, Address: address, ListenPort: listenport, Endpoint: endpoint, AllowedIPs: allowedips, FwMark: fwmark, DNS: dns, MTU: mtu, Table: table, PreUp: preup, PostUp: postup, PreDown: predown, PostDown: postdown, SaveConfig: saveconfig}
+		p := wireguard.Peer{Name: name, PrivateKey: privatekey, Address: address, ListenPort: listenport, Endpoint: endpoint, AllowedIPs: allowedips, FwMark: fwmark, DNS: dns, MTU: mtu, Table: table, PreUp: preup, PostUp: postup, PreDown: predown, PostDown: postdown, SaveConfig: saveconfig}
 		err := thePeers.AddPeer(p)
 		return err
 	},
