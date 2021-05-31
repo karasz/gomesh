@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/karasz/gomesh/wireguard"
 	"github.com/spf13/cobra"
 )
 
@@ -36,6 +37,8 @@ var generateCmd = &cobra.Command{
 		out, _ := cmd.Flags().GetString("output")
 		id, _ := cmd.Flags().GetInt("network_id")
 		peername, _ := cmd.Flags().GetString("peer_name")
+		usestdout, _ := cmd.Flags().GetBool("useStdOut")
+		wireguard.SetOutput(usestdout)
 		err := thePeers.GenerateConfigs(out, id, peername)
 		if err != nil {
 			fmt.Println("generate", err)
@@ -47,5 +50,6 @@ func init() {
 	generateCmd.Flags().StringP("output", "o", "output", "Directory where to output configs.")
 	generateCmd.Flags().IntP("network_id", "i", 0, "ID of the network to generate")
 	generateCmd.Flags().StringP("peer_name", "p", "", "Generate config for this peer")
+	generateCmd.Flags().BoolP("useStdOut", "s", false, "Use StdOut instead of files")
 	rootCmd.AddCommand(generateCmd)
 }
