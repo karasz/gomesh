@@ -34,8 +34,9 @@ var generateCmd = &cobra.Command{
 	Long:  `Generate will create the configs file in the specified folder`,
 	Run: func(cmd *cobra.Command, args []string) {
 		out, _ := cmd.Flags().GetString("output")
-		id, _ := cmd.Flags().GetInt("id")
-		err := thePeers.GenerateConfigs(out, id)
+		id, _ := cmd.Flags().GetInt("network_id")
+		peername, _ := cmd.Flags().GetString("peer_name")
+		err := thePeers.GenerateConfigs(out, id, peername)
 		if err != nil {
 			fmt.Println("generate", err)
 		}
@@ -45,5 +46,6 @@ var generateCmd = &cobra.Command{
 func init() {
 	generateCmd.Flags().StringP("output", "o", "output", "Directory where to output configs.")
 	generateCmd.Flags().IntP("network_id", "i", 0, "ID of the network to generate")
+	generateCmd.Flags().StringP("peer_name", "p", "", "Generate config for this peer")
 	rootCmd.AddCommand(generateCmd)
 }
