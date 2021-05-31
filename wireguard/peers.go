@@ -36,6 +36,7 @@ import (
 type Peers []Peer
 
 var dbFile string
+var useStdOut bool
 
 //Peer is a Wireguard Peer
 type Peer struct {
@@ -77,6 +78,12 @@ func LoadPeers(peersPath string) (Peers, error) {
 	dbFile = peersPath
 
 	return p, nil
+}
+
+// SetOutput will instruct to use standard out if called with true
+// argument or files if called with false
+func SetOutput(out bool) {
+	useStdOut = out
 }
 
 func (p Peers) peerExists(pr Peer) bool {
@@ -152,12 +159,7 @@ func (p Peers) GenerateConfigs(folder string, id int, peername string) error {
 
 func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
 	var err error
-	configFile := folder + "/" + pr.Name + "_wg" + fmt.Sprintf("%d", id) + ".conf"
 	var strToWrite string
-	f, err := os.OpenFile(configFile, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
 
 	// write the interface section
 	strToWrite = "[Interface]\n"
@@ -183,7 +185,17 @@ func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
 		}
 
 	}
-	_, err = f.WriteString(strToWrite)
+	if !useStdOut {
+		configFile := folder + "/" + pr.Name + "_wg" + fmt.Sprintf("%d", id) + ".conf"
+		f, err := os.OpenFile(configFile, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return err
+		}
+		_, err = f.WriteString(strToWrite)
+		return err
+	} else {
+		fmt.Println(strToWrite)
+	}
 	return err
 }
 
