@@ -79,7 +79,7 @@ Licensed under the MIT license
 
 <img src="https://opensource.org/files/OSIApproved_1.png" width="120">
 
-(C) 2021 Nagy Károly Gábriel
+(C) 2021 JPI Technologies Ltd
 
 ## Credits
 
