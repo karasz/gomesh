@@ -159,28 +159,28 @@ func (p Peers) GenerateConfigs(folder string, id int, peername string) error {
 
 func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
 	var err error
-	var strToWrite string
+	var b strings.Builder
 
 	// write the interface section
-	strToWrite = "[Interface]\n"
-	strToWrite = strToWrite + fmt.Sprintf("# Name: %s\n", strings.ToLower(pr.Name))
-	strToWrite = strToWrite + fmt.Sprintf("Address = %s\n", strings.Join(pr.Address, ","))
-	strToWrite = strToWrite + fmt.Sprintf("PrivateKey = %s\n", pr.PrivateKey)
-	strToWrite = strToWrite + fmt.Sprintf("Endpoint = %s:%d\n", pr.Endpoint, pr.ListenPort)
+	b.WriteString("[Interface]\n")
+	b.WriteString(fmt.Sprintf("# Name: %s\n", strings.ToLower(pr.Name)))
+	b.WriteString(fmt.Sprintf("Address = %s\n", strings.Join(pr.Address, ",")))
+	b.WriteString(fmt.Sprintf("PrivateKey = %s\n", pr.PrivateKey))
+	b.WriteString(fmt.Sprintf("Endpoint = %s:%d\n", pr.Endpoint, pr.ListenPort))
 
 	// write the peers section
 	for j := range p {
 		if p[j].Name != pr.Name {
-			strToWrite = strToWrite + "\n[Peer]\n"
-			strToWrite = strToWrite + fmt.Sprintf("# Name: %s\n", strings.ToLower(p[j].Name))
+			b.WriteString("\n[Peer]\n")
+			b.WriteString(fmt.Sprintf("# Name: %s\n", strings.ToLower(p[j].Name)))
 			pub, err := PublicKey(p[j].PrivateKey)
 			if err != nil {
 				return err
 			}
-			strToWrite = strToWrite + fmt.Sprintf("PublicKeyKey = %s\n", pub)
-			strToWrite = strToWrite + fmt.Sprintf("Endpoint = %s:%d\n", p[j].Endpoint, p[j].ListenPort)
+			b.WriteString(fmt.Sprintf("PublicKeyKey = %s\n", pub))
+			b.WriteString(fmt.Sprintf("Endpoint = %s:%d\n", p[j].Endpoint, p[j].ListenPort))
 			allIPs := append(p[j].Address, p[j].AllowedIPs...)
-			strToWrite = strToWrite + fmt.Sprintf("AllowedIPs = %s\n", strings.Join(allIPs, ","))
+			b.WriteString(fmt.Sprintf("AllowedIPs = %s\n", strings.Join(allIPs, ",")))
 
 		}
 
@@ -191,10 +191,10 @@ func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
 		if err != nil {
 			return err
 		}
-		_, err = f.WriteString(strToWrite)
+		_, err = f.WriteString(b.String())
 		return err
 	} else {
-		fmt.Println(strToWrite)
+		fmt.Println(b.String())
 	}
 	return err
 }
