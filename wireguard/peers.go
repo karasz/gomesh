@@ -138,26 +138,26 @@ func (p Peers) DeletePeer(pr string) {
 
 //GenerateConfigs will generate the Wireguard mesh
 //configs in the specified folder
-func (p Peers) GenerateConfigs(folder string, id int, peername string) error {
+func (p Peers) GenerateConfigs(folder string, peername string) error {
 	var err error
 	if err = os.MkdirAll(folder, 0775); err != nil {
 		return err
 	}
 	if peername == "" {
 		for i := range p {
-			err = p.dumpConfig(p[i], folder, id)
+			err = p.dumpConfig(p[i], folder)
 		}
 	} else {
 		for j := range p {
 			if p[j].Name == peername {
-				err = p.dumpConfig(p[j], folder, id)
+				err = p.dumpConfig(p[j], folder)
 			}
 		}
 	}
 	return err
 }
 
-func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
+func (p Peers) dumpConfig(pr Peer, folder string) error {
 	var err error
 	var b strings.Builder
 
@@ -186,7 +186,7 @@ func (p Peers) dumpConfig(pr Peer, folder string, id int) error {
 
 	}
 	if !useStdOut {
-		configFile := folder + "/" + pr.Name + "_wg" + fmt.Sprintf("%d", id) + ".conf"
+		configFile := folder + "/" + pr.Name + ".conf"
 		f, err := os.OpenFile(configFile, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return err
