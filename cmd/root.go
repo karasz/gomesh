@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 	Use:     "gomesh",
 	Short:   "Generate Wireguard Mesh VPN configurations",
 	Long:    "This little tool will generate and manage configuration files for Wireguard Mesh VPNs.",
-	Version: "0.1.0",
+	Version: "0.5.0",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
