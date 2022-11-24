@@ -30,7 +30,11 @@ import (
 	"github.com/karasz/gomesh/wireguard"
 )
 
-var thePeers wireguard.Peers
+var (
+	//Global variables, unglobalize them.
+	thePeers wireguard.Peers
+	dbFile   string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -49,14 +53,17 @@ func Execute() {
 }
 
 func init() {
-	var dbFile string
-	rootCmd.PersistentFlags().StringVarP(&dbFile, "database", "d", "database.json", "registry file")
-	initDatabase(dbFile)
+	cobra.OnInitialize(initDb)
+	rootCmd.PersistentFlags().StringVarP(&dbFile, "database", "d", "", "registry file")
 }
 
-func initDatabase(filePath string) {
+func initDb() {
 	var err error
-	thePeers, err = wireguard.LoadPeers(filePath)
+	if dbFile == "" {
+		dbFile = "database.json"
+	}
+
+	thePeers, err = wireguard.LoadPeers(dbFile)
 
 	if err != nil {
 		fmt.Println(err)
