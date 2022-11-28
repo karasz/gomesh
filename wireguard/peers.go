@@ -167,6 +167,21 @@ func (p Peers) dumpConfig(pr Peer, folder string) error {
 	b.WriteString(fmt.Sprintf("Address = %s\n", strings.Join(pr.Address, ",")))
 	b.WriteString(fmt.Sprintf("PrivateKey = %s\n", pr.PrivateKey))
 	b.WriteString(fmt.Sprintf("Endpoint = %s:%d\n", pr.Endpoint, pr.ListenPort))
+	if pr.PreUp != "" {
+		b.WriteString(fmt.Sprintf("PreUp = %s", pr.PreUp))
+	}
+	if pr.PostUp != "" {
+		b.WriteString(fmt.Sprintf("PostUp = %s", pr.PostUp))
+	}
+	if pr.PreDown != "" {
+		b.WriteString(fmt.Sprintf("PreDown = %s", pr.PreDown))
+	}
+	if pr.PostDown != "" {
+		b.WriteString(fmt.Sprintf("PostDown = %s", pr.PostDown))
+	}
+	if pr.SaveConfig {
+		b.WriteString(fmt.Sprintf("SaveConfig = True"))
+	}
 
 	// write the peers section
 	for j := range p {
